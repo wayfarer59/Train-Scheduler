@@ -6,6 +6,7 @@
     storageBucket: "train-scheduler-88d4a.appspot.com",
     messagingSenderId: "870969814165"
   };
+  
   firebase.initializeApp(config);
 
  var database = firebase.database();
@@ -45,9 +46,10 @@ $("#add-train").on("click",function(evet) {
 	$("#time-input").val("");
 	$("#frequency-input").val("");
 
+	return false;
 });
 
-	database.ref().on("child-added", function(childSnapshot, prevChildKey){
+	database.ref().on("child_added", function(childSnapshot, prevChildKey){
 		console.log(childSnapshot.val());
 
 		var trainName = childSnapshot.val().name;
@@ -60,15 +62,34 @@ $("#add-train").on("click",function(evet) {
 		console.log(firstTrainTime);
 		console.log(frequency);
 
-		// var tFrequency = 10;
+		
+		var tFrequency = 3;
 
-		// var firstTime = "06:00";
+		var firstTime = "03:30";
 
-	$("#train-table > tbody").append("<tr><td>" + trainName + "</td><td>" + destination );	
+		var firstTrainTimeConverted = moment(firstTime, "hh:mm").subtract(1, "years");
+		console.log(firstTrainTimeConverted);
+		
+		var currentTime = moment();
+
+		
+
+		var diffTime = moment().diff(moment(firstTrainTimeConverted), "minutes");
+		console.log("what is diffTime", diffTime);
+		
+		var tRemainder = diffTime % tFrequency;
+
+		var tMinutesTillTrain = tFrequency - tRemainder;
+
+		var nextTrain = moment().add(tMinutesTillTrain, "minutes");
+
+	$("#train-table > tbody").append("<tr><td>" + trainName + "</td><td>" + destination + "</td><td>" + nextTrain + "</td><td>" + tMinutesTillTrain + "</td></tr>" );	
 
 });
 
 
-
+ // function(errorObject) {
+ //      console.log("Errors handled: " + errorObject.code);
+ //    };
 
 
